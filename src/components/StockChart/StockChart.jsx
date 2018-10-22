@@ -14,17 +14,34 @@ const stockChartId = 'stock-chart';
 class StockChart extends React.PureComponent {
   ctx = null;
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      stockWidth: 0,
+    };
+  }
+
   componentDidMount() {
     if (this.ctx == null) {
       this.ctx = new DrawChart(stockChartId);
-      this.ctx.fillColor().drawYaxis().drawXaxis();
     }
+    if (this.parentEl) {
+      this.setState({
+        stockWidth: this.parentEl.getBoundingClientRect().width - 100,
+      });
+    }
+
+    window.addEventListener('resize', this.handleSizeChange.bind(this));
   }
 
   componentDidUpdate() {
     if (this.ctx) {
       this.ctx.draw(this.props.data);
     }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleSizeChange.bind(this));
   }
 
   render() {
@@ -39,9 +56,15 @@ class StockChart extends React.PureComponent {
           )
         }
         {requesting && (<div className={b('loading')}>Loading...</div>)}
-        <canvas width="1200" height="400" className={b('chart')} id={stockChartId} />
+        <canvas width={this.state.stockWidth} height="400" className={b('chart')} id={stockChartId} />
       </div>
     );
+  }
+
+  handleSizeChange() {
+    this.setState({
+      stockWidth: this.parentEl.getBoundingClientRect().width - 100,
+    });
   }
 }
 

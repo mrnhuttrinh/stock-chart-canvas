@@ -22,10 +22,14 @@ class DrawChart {
   realDistance = 0;
   backgroundColor = '#E4E4E4';
   lineWidth = 0.3;
+  distanceTwoColumn = 20;
 
   constructor(id) {
     this.canvas = document.getElementById(id);
     this.ctx = this.canvas.getContext("2d");
+    this.fillColor();
+    this.drawYaxis();
+    this.drawXaxis();
   }
 
   fillColor() {
@@ -215,7 +219,7 @@ class DrawChart {
     this.drawYaxis();
     this.drawXaxis();
 
-    const totalWithCanbeDraw = (this.canvas.width - this.rightPadding - this.leftPadding) / 20;
+    const totalWithCanbeDraw = (this.canvas.width - this.rightPadding - this.leftPadding) / this.distanceTwoColumn;
 
     this.data = _.map(_.take(_.values(data), totalWithCanbeDraw), da => {
       return {
