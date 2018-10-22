@@ -255,6 +255,10 @@ class DrawChart {
     this.drawYLevel(this.min, this.max);
     this.drawValueColumn();
   }
+
+  destroy() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
 }
 
 export default DrawChart;
