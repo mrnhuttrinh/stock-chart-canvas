@@ -29,13 +29,33 @@ class DrawChart {
   downColor = "#FF0000";
   textWidth = 8;
   openCloseWidth = 7;
+  rects = [];
 
   constructor(id) {
     this.canvas = document.getElementById(id);
     this.ctx = this.canvas.getContext("2d");
+
     this.fillColor();
     this.drawYaxis();
     this.drawXaxis();
+
+    // this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
+  }
+
+  handleMouseMove(event) {
+    const mouseX = event.offsetX;
+    const mouseY = event.offsetY;
+    for (var i = 0; i < this.rects.length; i++) {
+      if (this.isPointInside(this.rects[i], mouseX, mouseY)) {
+        console.log('inside');
+      } else {
+        console.log('outside');
+      }
+    }
+  }
+
+  isPointInside(point, x, y) {
+    return (x >= point.x && x <= point.x + point.width && y >= point.y && y <= point.y + point.height);
   }
 
   fillColor() {
@@ -149,35 +169,45 @@ class DrawChart {
     const low = Math.abs(pointData.low - this.minData) / (this.realDistance) * YAxisLength;
     this.ctx.beginPath();
 
+    let strokeStyle = this.upColor;
     if (pointData.open > pointData.close) {
       // down
-      this.ctx.strokeStyle = this.downColor;
-    } else {
-      // up
-      this.ctx.strokeStyle = this.upColor;
+      strokeStyle = this.downColor;
     }
+
     const y1 = this.topPadding + high;
-    this.ctx.moveTo(x1, y1);
     const y2 = this.canvas.height - this.bottomPadding - low;
+    this.ctx.moveTo(x1, y1);
     this.ctx.lineTo(x2, y2);
     this.ctx.lineWidth = 2;
     this.ctx.stroke();
+    this.ctx.strokeStyle = strokeStyle;
+
+    this.rects.push({x: x1, y: y1, width: x2 - x1, height: y2 - y1, data: pointData});
 
     // draw open
     const open = Math.abs(pointData.open - this.maxData) / (this.realDistance) * YAxisLength;
     const yOpen = this.topPadding + open;
+
     this.ctx.moveTo(x1, yOpen);
     this.ctx.lineTo(x2 - this.openCloseWidth, yOpen);
     this.ctx.lineWidth = 2;
     this.ctx.stroke();
+    this.ctx.strokeStyle = strokeStyle;
+
+    this.rects.push({x: x1, y: yOpen, width: Math.abs(x2 - this.openCloseWidth - x1), height: 0, data: pointData});
 
     // draw close
     const close = Math.abs(pointData.close - this.maxData) / (this.realDistance) * YAxisLength;
     const yClose = this.topPadding + close;
+
     this.ctx.moveTo(x1, yClose);
     this.ctx.lineTo(x2 + this.openCloseWidth, yClose);
     this.ctx.lineWidth = 2;
     this.ctx.stroke();
+    this.ctx.strokeStyle = strokeStyle;
+
+    this.rects.push({x: x1, y: yClose, width: Math.abs(x2 + this.openCloseWidth - x1), height: 0, data: pointData});
 
     this.ctx.closePath();
   }
@@ -227,6 +257,7 @@ class DrawChart {
 
     const totalWithCanbeDraw = (this.canvas.width - this.rightPadding - this.leftPadding) / this.distanceTwoColumn;
 
+    this.rects = [];
     this.data = _.map(_.take(_.values(data), totalWithCanbeDraw), da => {
       return {
         open: parseFloat(da[OPEN_KEY]),
@@ -257,6 +288,7 @@ class DrawChart {
   }
 
   destroy() {
+    // this.canvas.removeEventListener('mousemove', this.handleMouseMove.bind(this));
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 }
