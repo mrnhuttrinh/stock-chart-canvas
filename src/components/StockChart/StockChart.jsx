@@ -41,6 +41,9 @@ class StockChart extends React.PureComponent {
   }
 
   componentWillUnmount() {
+    if (this.ctx) {
+      this.ctx.destroy();
+    }
     window.removeEventListener('resize', this.handleSizeChange.bind(this));
   }
 

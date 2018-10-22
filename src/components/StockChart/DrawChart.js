@@ -52,6 +52,7 @@ class DrawChart {
       this.ctx.moveTo(this.leftPadding, this.topPadding);
       this.ctx.lineTo(this.leftPadding, this.canvas.height - this.bottomPadding);
       this.ctx.lineWidth = this.lineWidth;
+      this.ctx.strokeStyle = this.fontColor;
       this.ctx.stroke();
       this.ctx.closePath();
     }
@@ -64,6 +65,7 @@ class DrawChart {
       this.ctx.moveTo(this.leftPadding, this.canvas.height - this.bottomPadding);
       this.ctx.lineTo(this.canvas.width - this.rightPadding, this.canvas.height - this.bottomPadding);
       this.ctx.lineWidth = this.lineWidth;
+      this.ctx.strokeStyle = this.fontColor;
       this.ctx.stroke();
       this.ctx.closePath();
     }
@@ -184,17 +186,17 @@ class DrawChart {
 
   drawValueColumn() {
     const vaccum = 20;
-    const leftPoint = this.leftPadding + vaccum;
+    const leftPoint = this.canvas.width - (this.rightPadding + this.openCloseWidth);
     const YAxisLength = this.canvas.height - this.bottomPadding - this.topPadding;
 
     _.forEach(this.data, (da, index) => {
       this.ctx.beginPath();
 
-      const x1 = leftPoint + (index * vaccum);
+      const x1 = leftPoint - (index * vaccum);
       const y1 = this.topPadding;
       this.ctx.moveTo(x1, y1);
 
-      const x2 = leftPoint + (index * vaccum);
+      const x2 = x1;
       const y2 = this.canvas.height - this.bottomPadding;
       this.ctx.lineTo(x2, y2);
 
@@ -225,7 +227,7 @@ class DrawChart {
     this.drawYaxis();
     this.drawXaxis();
 
-    const totalWithCanbeDraw = (this.canvas.width - this.rightPadding - this.leftPadding) / this.distanceTwoColumn;
+    const totalWithCanbeDraw = parseInt((this.canvas.width - this.rightPadding - this.leftPadding + this.openCloseWidth) / this.distanceTwoColumn);
 
     this.data = _.map(_.take(_.values(data), totalWithCanbeDraw), da => {
       return {
@@ -254,6 +256,10 @@ class DrawChart {
     }
     this.drawYLevel(this.min, this.max);
     this.drawValueColumn();
+  }
+
+  destroy() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 }
 

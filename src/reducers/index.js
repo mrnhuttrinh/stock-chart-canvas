@@ -38,7 +38,6 @@ function fetchData(state = { data: [] }, action) {
     case FETCH_DATA_FAILED:
       return {
         ...state,
-        data: [],
         error: action.error,
         requesting: false,
       };
