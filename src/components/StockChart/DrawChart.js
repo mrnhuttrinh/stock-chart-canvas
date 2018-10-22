@@ -23,6 +23,12 @@ class DrawChart {
   backgroundColor = '#E4E4E4';
   lineWidth = 0.3;
   distanceTwoColumn = 20;
+  fontSize = "12px serif";
+  fontColor = '#000';
+  upColor = "#008000";
+  downColor = "#FF0000";
+  textWidth = 8;
+  openCloseWidth = 7;
 
   constructor(id) {
     this.canvas = document.getElementById(id);
@@ -109,7 +115,7 @@ class DrawChart {
     const leftPoint = this.leftPadding - 10;
     const totalHeightCanbeDraw = this.canvas.height - this.bottomPadding - this.topPadding;
 
-    const margin = (`${max}`.length > `${min}`.length ? `${max}`.length : `${min}`.length) * 8 + 4;
+    const margin = (`${max}`.length > `${min}`.length ? `${max}`.length : `${min}`.length) * this.textWidth + 4;
 
     _.times(11, () => {
       this.ctx.beginPath();
@@ -129,8 +135,8 @@ class DrawChart {
       if ((max - min)) {
         const value = Number.isInteger(min) ? min : min.toFixed(1);
         const textValue = `${value + bullRepeat * times}`;
-        this.ctx.fillStyle = '#000';
-        this.ctx.font = "12px serif";
+        this.ctx.fillStyle = this.fontColor;
+        this.ctx.font = this.fontSize;
         this.ctx.fillText(textValue, x1 - margin, y1 + 5);
       }
 
@@ -145,10 +151,10 @@ class DrawChart {
 
     if (pointData.open > pointData.close) {
       // down
-      this.ctx.strokeStyle = '#FF0000';
+      this.ctx.strokeStyle = this.downColor;
     } else {
       // up
-      this.ctx.strokeStyle = '#008000';
+      this.ctx.strokeStyle = this.upColor;
     }
     const y1 = this.topPadding + high;
     this.ctx.moveTo(x1, y1);
@@ -161,7 +167,7 @@ class DrawChart {
     const open = Math.abs(pointData.open - this.maxData) / (this.realDistance) * YAxisLength;
     const yOpen = this.topPadding + open;
     this.ctx.moveTo(x1, yOpen);
-    this.ctx.lineTo(x2 - 7, yOpen);
+    this.ctx.lineTo(x2 - this.openCloseWidth, yOpen);
     this.ctx.lineWidth = 2;
     this.ctx.stroke();
 
@@ -169,7 +175,7 @@ class DrawChart {
     const close = Math.abs(pointData.close - this.maxData) / (this.realDistance) * YAxisLength;
     const yClose = this.topPadding + close;
     this.ctx.moveTo(x1, yClose);
-    this.ctx.lineTo(x2 + 7, yClose);
+    this.ctx.lineTo(x2 + this.openCloseWidth, yClose);
     this.ctx.lineWidth = 2;
     this.ctx.stroke();
 
@@ -193,7 +199,7 @@ class DrawChart {
       this.ctx.lineTo(x2, y2);
 
       this.ctx.lineWidth = this.lineWidth;
-      this.ctx.strokeStyle = '#000';
+      this.ctx.strokeStyle = this.fontColor;
       this.ctx.stroke();
       this.ctx.closePath();
 
